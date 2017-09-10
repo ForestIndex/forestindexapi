@@ -34,58 +34,58 @@ jobs:
           paths:
             - forestindexapi.tar
   
-  deploy:
-    <<: *defaults
-    steps:
-      - checkout
-      - setup_remote_docker
-      - attach_workspace:
-          at: ~/forestindexapi/tmp_docker_cache
-      - run:
-          name: Set AWS Keys
-          command: |
-            # Explicitly set keys on per job
-            mkdir ~/.aws && touch ~/.aws/credentials
-            echo -e "\n[default]\naws_access_key_id = $AWS_ACCESS_KEY_ID\naws_secret_access_key = $AWS_SECRET_ACCESS_KEY\n" >> ~/.aws/credentials
-      - run:
-          name: Load Cached Docker Image
-          command: docker load -i tmp_docker_cache/forestindexapi.tar
-      - run:
-          name: Update Docker Image
-          command: |
-            $(aws ecr get-login --no-include-email --region $AWS_REGION)
-            LATEST=$ACCOUNT.dkr.ecr.us-east-1.amazonaws.com/rhino-ecr/rhinoapi-node-build:latest
-            docker tag forest-index $LATEST
-            docker push $LATEST
-      - run:
-          name: Deploy
-          command: |
-            aws s3 cp docker-compose.yml s3://bluecactus-devops/forestindex/api_build/current/
-            aws s3 cp scripts/start.sh s3://bluecactus-devops/forestindex/api_build/current/
+#   deploy:
+#     <<: *defaults
+#     steps:
+#       - checkout
+#       - setup_remote_docker
+#       - attach_workspace:
+#           at: ~/forestindexapi/tmp_docker_cache
+#       - run:
+#           name: Set AWS Keys
+#           command: |
+#             # Explicitly set keys on per job
+#             mkdir ~/.aws && touch ~/.aws/credentials
+#             echo -e "\n[default]\naws_access_key_id = $AWS_ACCESS_KEY_ID\naws_secret_access_key = $AWS_SECRET_ACCESS_KEY\n" >> ~/.aws/credentials
+#       - run:
+#           name: Load Cached Docker Image
+#           command: docker load -i tmp_docker_cache/forestindexapi.tar
+#       - run:
+#           name: Update Docker Image
+#           command: |
+#             $(aws ecr get-login --no-include-email --region $AWS_REGION)
+#             LATEST=$ACCOUNT.dkr.ecr.us-east-1.amazonaws.com/rhino-ecr/rhinoapi-node-build:latest
+#             docker tag forest-index $LATEST
+#             docker push $LATEST
+#       - run:
+#           name: Deploy
+#           command: |
+#             aws s3 cp docker-compose.yml s3://bluecactus-devops/forestindex/api_build/current/
+#             aws s3 cp scripts/start.sh s3://bluecactus-devops/forestindex/api_build/current/
 
 
-workflows:
-  version: 2
+# workflows:
+#   version: 2
 
-  general:
-    jobs:
-      - build:
-          filters:
-            branches:
-              ignore:
-                - master
+#   general:
+#     jobs:
+#       - build:
+#           filters:
+#             branches:
+#               ignore:
+#                 - master
 
-  production:
-    jobs:
-      - build:
-          filters:
-            branches:
-              only:
-                - master
-      - deploy:
-          requires:
-            - build
-        filters:
-          branches:
-            only:
-              - master
+#   production:
+#     jobs:
+#       - build:
+#           filters:
+#             branches:
+#               only:
+#                 - master
+#       - deploy:
+#           requires:
+#             - build
+#         filters:
+#           branches:
+#             only:
+#               - master
