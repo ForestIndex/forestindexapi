@@ -51,10 +51,10 @@ jobs:
           name: Load Cached Docker Image
           command: docker load -i tmp_docker_cache/forestindexapi.tar
       - run:
-          name: Update Docker Image
+          name: Push Docker Image
           command: |
             $(aws ecr get-login --no-include-email --region $AWS_REGION)
-            LATEST=$ACCOUNT.dkr.ecr.us-east-1.amazonaws.com/rhino-ecr/rhinoapi-node-build:latest
+            LATEST=$ACCOUNT.dkr.ecr.us-east-1.amazonaws.com/bluecactus/forest-index:latest
             docker tag forest-index $LATEST
             docker push $LATEST
       - run:
