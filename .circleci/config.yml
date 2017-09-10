@@ -59,9 +59,7 @@ jobs:
             docker push $LATEST
       - run:
           name: Deploy
-          command: |
-            aws s3 cp docker-compose.yml s3://bluecactus-devops/forestindex/api_build/current/
-            aws s3 cp scripts/start.sh s3://bluecactus-devops/forestindex/api_build/current/
+          command: node deploy.js
 
 
 workflows:

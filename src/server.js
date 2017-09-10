@@ -76,7 +76,7 @@ app.get('/api/status', (req, res) => {
     res.send({
         server: 'Forest Index',
         status: `${process.env.NODE_ENV} environment online`,
-        last_update: `${process.env.UPDATE_TIME}`
+        last_reboot: process.env.REBOOT_TIME
     });
 });
 
