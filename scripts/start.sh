@@ -14,9 +14,6 @@ sudo docker pull 081027247578.dkr.ecr.us-east-1.amazonaws.com/bluecactus/forest-
 # Nginx
 sudo docker pull 081027247578.dkr.ecr.us-east-1.amazonaws.com/nginx-bravo:latest
 
-# get latest deployments
-aws s3 cp s3://bluecactus-devops/forestindex/api_build/current ~/ --recursive
-
 # start docker containers
 cd ~
 sudo docker-compose up

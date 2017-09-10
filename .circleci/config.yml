@@ -57,6 +57,7 @@ jobs:
             LATEST=$ACCOUNT.dkr.ecr.us-east-1.amazonaws.com/bluecactus/forest-index:latest
             docker tag forest-index $LATEST
             docker push $LATEST
+      - run: yarn
       - run:
           name: Deploy
           command: node deploy.js
