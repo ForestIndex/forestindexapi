@@ -29,7 +29,7 @@ function reboot() {
 function waitTilDone() {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      request(process.env.HEALTH_CHECK_URL, (err, res) => {
+      return request(process.env.HEALTH_CHECK_URL, (err, res) => {
         if (err) {
           console.log(`${err}`.red, `waiting ${waitTime}...`.yellow);
           waitTilDone();

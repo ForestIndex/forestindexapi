@@ -1,0 +1,13 @@
+{
+  "watch": [
+    "src/"
+  ],
+  "ignore": [
+    "lib/",
+    "node_modules/",
+    "src/_db/migration.checklist.json"
+  ],
+  "env": {
+    "NODE_ENV": "development"
+  }
+}

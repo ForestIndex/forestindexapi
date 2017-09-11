@@ -47,7 +47,7 @@ function db() {
 
 function startUp() {
     // check for new migrations
-    // migrationAgent();
+    migrationAgent();
 
     // start modules
     users(app);
