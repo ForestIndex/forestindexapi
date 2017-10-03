@@ -59,7 +59,7 @@ jobs:
             docker push $LATEST
       - run:
           name: Update Docker-Compose Artifact
-          command: aws s3 cp docker-compose.yml s3://bluecactus-devops/forestindex/api_build/current/ --acl private
+          command: aws s3 cp docker/prod/docker-compose.yml s3://bluecactus-devops/forestindex/api_build/current/ --acl private
       - run: yarn
       - run:
           name: Deploy

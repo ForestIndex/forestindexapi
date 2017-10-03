@@ -20,7 +20,8 @@ export async function getUsers() {
     .select('-admin')
     .populate('info.address.state')
     .populate('_service')
-    .populate('_category', '-_service');
+    .populate('_category', '-_service')
+    .sort('order');
     return users;
 }
 
@@ -45,6 +46,14 @@ export async function getuserByUserName(name) {
 
 export async function createUser(usr) {
     usr._id = await tools.getNextDbId();
+
+    if (!usr.order) {
+        const lastOrder = await User.findOne({ admin: false })
+        .sort('-order');
+        const next = lastOrder.order + 1;
+        usr.order = next;
+    }
+
     const user = new User(usr);
     await user.save();
     return user;
@@ -100,7 +109,8 @@ export async function searchUsers(criteria) {
     if (criteria.info && Object.keys(criteria.info).length === 0) delete criteria.info;
     if (criteria.categories) delete criteria.categories;
 
-    const unfiltered = await User.find(criteria);
+    const unfiltered = await User.find(criteria)
+    .sort('order');
     const filteredCounties = filterUsersCounties(unfiltered, counties);
     const filterCountyCat = filterUsersCategories(filteredCounties, categories);
 
@@ -131,7 +141,7 @@ export async function getAllUsers() {
     .populate('_category')
     .populate('info.address.state')
     .populate('info.operationalCounties')
-    .sort('info.businessName');
+    .sort('order');
 }
 
 export async function getAdmins() {

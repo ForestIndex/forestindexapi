@@ -12,8 +12,6 @@ WORKDIR ~/api
 RUN yarn
 RUN yarn build:prod
 
-VOLUME /home/api/src
-
 EXPOSE 8080 8080
 
 CMD yarn start
