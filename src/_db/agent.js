@@ -2,16 +2,15 @@ import fs from 'fs';
 
 const checklistData = fs.readFileSync(`${__dirname}/migration.checklist.json`, 'utf-8');
 const checklist = JSON.parse(JSON.parse(JSON.stringify(checklistData)));
-const notRun = checklist.filter((mig) => !mig.run);
 
-export default function() {
-  return Promise.resolve(notRun)
+export default function agent() {
+  return Promise.resolve(checklist)
   .then(importMigrations)
   .then(executeMigrations)
+  // .then(rollBackErrorMigrations)
   .catch((err) => {
     console.log(err);
   })
-  // .catch(rollBackMigrations);
 }
 
 function importMigrations(checklistArr) {
@@ -19,32 +18,40 @@ function importMigrations(checklistArr) {
   for (let i = 0; i < checklistArr.length; i++) {
     const moduleLocation = `${__dirname}/migrations/${checklistArr[i].name}`;
     const mig = require(moduleLocation);
+    mig._details = checklistArr[i];
     migrations.push(mig);
   }
   return Promise.resolve(migrations);
 }
 
-async function executeMigrations(migrations) {
+async function executeMigrations(migs) {
+  const migrations = migs.filter((m) => !m._details.run);
   if (migrations.length > 0) {
     for (let i = 0; i < migrations.length; i++) {
-      await migrations[i].default.up();
-      updateChecklist(migrations[i].default.name, true);
+      if (!migrations[i]._details.run) {
+        migs[i]._details.run = true;
+        migs[i]._details.success = true;
+        await migrations[i].default.up();
+      }
+        migrations[i]._details.success = true;
+        await updateChecklist(migrations[i]._details.name, true);
+      }
+      return Promise.resolve(migs);
     }
-  }
+  return Promise.resolve(migs);
 }
 
-async function rollBackMigrations(err) {
-  console.log(err);
-  return Promise.resolve(notRun)
-  .then(importMigrations)
-  .then(async (migrations) => {
-    if (migrations.length > 0) {
-      for (let i = 0; i < migrations.length; i++) {
-        await migrations[i].default.down();
-        updateChecklist(migrations[i].default.name, true);
-      }
+
+async function rollBackErrorMigrations(migs) {
+  const migrations = migs.filter((m) => !m.success);
+  if (migrations.length > 0) {
+    for (let i = 0; i < migrations.length; i++) {
+      await migrations[i].default.down();
+      await updateChecklist(migrations[i]._details.name, false, null);
     }
-  })
+    return Promise.resolve();
+  }
+  return Promise.resolve();
 }
 
 function updateChecklist(migrationName, run, success=true) {

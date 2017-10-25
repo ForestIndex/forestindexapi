@@ -12,5 +12,6 @@ WORKDIR /api
 RUN yarn
 
 EXPOSE 8080 8080
+VOLUME /app/src
 
 CMD yarn dev
