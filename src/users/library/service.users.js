@@ -45,16 +45,25 @@ export async function getuserByUserName(name) {
 }
 
 export async function createUser(usr) {
-    usr._id = await tools.getNextDbId();
+    const newUser = usr;
+    newUser._id = await tools.getNextDbId();
 
-    if (!usr.order) {
+    if (newUser.password) {
+        newUser.password = bcrypt.hashSync(newUser.password, 8);
+    }
+
+    if (!newUser.images || newUser.images.length === 0) {
+        newUser.images = [];
+        newUser.images.push('ee55c6a0-2adc-11e7-a8f5-4b27c9497bb1'); // no profile pic
+    }
+    if (!newUser.order) {
         const lastOrder = await User.findOne({ admin: false })
         .sort('-order');
         const next = lastOrder.order + 1;
-        usr.order = next;
+        newUser.order = next;
     }
 
-    const user = new User(usr);
+    const user = new User(newUser);
     await user.save();
     return user;
 }
@@ -62,8 +71,10 @@ export async function createUser(usr) {
 export async function nextUserId() {
     const user = await User.findOne({})
     .sort('-_id');
-    const nextId = user._id + 1;
-    return nextId;
+    if (!!user && user._id) {
+        return user._id + 1;
+    }
+    return 1;
 }
 
 export function shapeDataForSearch(criteria) {
@@ -120,6 +131,10 @@ export async function searchUsers(criteria) {
 export async function updateUser(id, data) {
     if (data.password) {
         data.password = bcrypt.hashSync(data.password, 8);
+    }
+    if (!data.info.images || data.info.images.length === 0) {
+        data.info.images = [];
+        // data.info.images.push('ee55c6a0-2adc-11e7-a8f5-4b27c9497bb1');
     }
     await User.findOneAndUpdate({ _id: id }, { $set: data });
     const usr = await User.findById(id);

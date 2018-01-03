@@ -1,5 +1,6 @@
-version: '3'
+version: '2'
 services:
+
   api:
     image: "081027247578.dkr.ecr.us-east-1.amazonaws.com/bluecactus/forest-index:latest"
     container_name: "forestindex"
@@ -8,6 +9,7 @@ services:
     ports:
      - "8080:8080"
     restart: "always"
+
   nginx:
     image: "081027247578.dkr.ecr.us-east-1.amazonaws.com/nginx-bravo:latest"
     container_name: "nginx"

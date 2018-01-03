@@ -39,8 +39,8 @@
   "scripts": {
     "dev": "nodemon --exec 'eslint . && NODE_ENV='development' babel-node src/server.js'",
     "docker:build": "docker build -t forest-index -f docker/prod/Dockerfile .",
-    "docker:dev": "docker-compose up --build",
-    "docker:test:unit": "docker run --name forestindex-test forest-index yarn test:unit",
+    "docker:dev": "docker-compose -f docker-compose.yml -f docker/override/docker-compose.dev.yml up",
+    "docker:down": "docker-compose -f docker-compose.yml -f docker/override/docker-compose.dev.yml down",
     "test:unit": "mocha --require babel-core/register --recursive src/_tests/unit",
     "build:prod": "rm -rf lib && mkdir lib && NODE_ENV='development' babel src --out-dir lib --ignore src/_tests/*",
     "start": "node lib/server.js"

@@ -7,7 +7,7 @@ import colors from 'colors'; // eslint-disable-line
 
 export function getAllUsers(req, res) {
     return Promise.resolve()
-    .then(() => tokens.authorize(req.query.token))
+    .then(() => tokens.authorize(req.cookies.forestryservices))
     .then(() => userService.getAllUsers())
     .then((users) => res.send(users))
     .catch((err) => errors.forbidden(req, res, err));
@@ -15,7 +15,7 @@ export function getAllUsers(req, res) {
 
 export function getAdmins(req, res) {
     return Promise.resolve()
-    .then(() => tokens.authorize(req.query.token))
+    .then(() => tokens.authorize(req.cookies.forestryservices))
     .then(() => userService.getAdmins())
     .then((admins) => res.send(admins))
     .catch((err) => errors.forbidden(req, res, err));
@@ -36,7 +36,7 @@ export function getUser(req, res) {
 
 export function createUser(req, res) {
     return Promise.resolve()
-    .then(() => tokens.authorize(req.query.token))
+    .then(() => tokens.authorize(req.cookies.forestryservices))
     .then(() => userService.createUser(req.body))
     .then(() => res.status(204).send())
     .catch((err) => {
@@ -47,7 +47,7 @@ export function createUser(req, res) {
 
 export function updateUser(req, res) {
     return Promise.resolve()
-    .then(() => tokens.authorize(req.query.token))
+    .then(() => tokens.authorize(req.cookies.forestryservices))
     .then(() => userService.updateUser(req.params.id, req.body))
     .then((usr) => res.send(usr))
     .catch(() => { res.status(403).send(); });

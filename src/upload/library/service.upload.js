@@ -1,6 +1,7 @@
 import AWS from 'aws-sdk';
 import uuid from 'uuid/v1';
 import config from '../../config';
+import { FileSystemCredentials } from 'aws-sdk/lib/credentials/file_system_credentials';
 
 AWS.config.update({
     accessKeyId: config.aws.accessKeyId,
@@ -9,20 +10,36 @@ AWS.config.update({
 
 const s3 = new AWS.S3();
 
-export async function uploadFile(base64DataArr) {
-    const base64Data = base64DataArr[0];
-    const buff = new Buffer(base64Data.replace(/^data:.*;base64,/, ""),'base64');
+async function uploadFile(file) {
+    if (!file.base64) {
+        return Promise.reject('No base64 data included on a file upload request.');
+    }
+    const buff = new Buffer(file.base64.replace(/^data:.*;base64,/, ""),'base64');
     const filename = uuid().toString();
     const params = {
         Bucket: 'forest-index',
         Key: filename,
         Body: buff,
         ContentEncoding: 'base64',
-        ACL: 'public-read'
+        ACL: 'private'
     };
+    const uploadres = await s3.upload(params).promise();
+    console.log(uploadres);
+    return Promise.resolve(filename);
+}
 
-    await s3.upload(params, handleUrlData);
-    return filename;
+export async function uploadFiles(fileArr) {
+    if (fileArr.length < 1) {
+        return Promise.reject('No files included on upload request.');
+    }
+    const resultingNamesArr = [];
+
+    for (let i = 0; i < fileArr.length; i++) {
+        const file = fileArr[i];
+        const name = await uploadFile(file);
+        resultingNamesArr.push(name);
+    }
+    return Promise.resolve(resultingNamesArr);
 }
 
 function handleUrlData(err, data) {

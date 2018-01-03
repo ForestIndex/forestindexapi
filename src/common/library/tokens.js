@@ -45,15 +45,17 @@ export async function authorize(token, authLevel) {
     if (!token) {
         return Promise.reject('No token provided. Not authorized.');
     }
-    const data = await jwt.verify(token, config.secret);
-    let criteria = { _id: data.jwtid };
-    if (authLevel && authLevel > 0) {
-        criteria.admin = true;
+    const data = jwt.verify(token, config.secret);
+
+    if (!data || !data.jwtid) {
+        return Promise.reject('Unauthoried.');
     }
+
+    let criteria = { _id: data.jwtid };
     const userResult = await User.find(criteria);
 
     if (userResult.length > 0) {
         return Promise.resolve();
     }
-    return Promise.reject('Invalid web token');
+    return Promise.reject('Invalid web token. User not found.');
 }

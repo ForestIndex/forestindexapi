@@ -1,5 +1,5 @@
 import User from '../../users/models/model.user';
-import * as userService from '../../users/library/service.users';
+import { createUser } from '../../users/library/service.users';
 
 // Adding dummy data for NODE_ENV=development
 // all usernames begin with __
@@ -65,9 +65,15 @@ const users = [
     ],
     businessName: "John's Forestry",
     images: [
-      'forestbusiness.jpg'
+      'forrestbusiness.jpg'
     ]
     },
+    active: true
+  },
+  {
+    admin: true,
+    username: 'admin',
+    password:  'bacon',
     active: true
   }
 ];
@@ -78,7 +84,8 @@ async function insertUsers() {
   } else {
     console.log('Inserting users for development');
     for (let i = 0; i < users.length; i++) {
-      await userService.createUser(users[i]);
+      const u = users[i];
+      await createUser(u);
       console.log(`inserted ${users[i].username}`);
     }
     return Promise.resolve();

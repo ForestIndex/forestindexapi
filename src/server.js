@@ -29,6 +29,7 @@ const port = config.port || 8080;
 
 // set app
 const app = express();
+app.use(bodyParser.json({ limit: '1000kb' }));
 app.use(cors);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());

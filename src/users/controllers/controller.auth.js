@@ -5,8 +5,9 @@ import * as service from '../library/service.auth';
 import * as tokens from '../../common/library/tokens';
 
 export function login(req, res) {
-    return Promise.resolve(Manager.init(req, res))
-    .then(() => service.login(req.body))
+    return Promise.resolve()
+    .then(() => Promise.resolve(req.body))
+    .then(service.login)
     .then((id) => tokens.create(id))
     .then((tkn) => {
         res.cookie('forestryservices', { httpOnly: false, maxAge: 86400 })
@@ -17,7 +18,7 @@ export function login(req, res) {
 
 export function checkCredentials(req, res) {
     return Promise.resolve(Manager.init(req, res))
-    .then(() => tokens.authorize(req.query.token))
+    .then(() => tokens.authorize(req.cookies.forestryservices))
     .then(() => res.sendStatus(200))
     .catch((err) => res.status(403).send(err));
 }
