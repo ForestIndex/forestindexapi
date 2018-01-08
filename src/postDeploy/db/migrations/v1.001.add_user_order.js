@@ -1,4 +1,4 @@
-import User from '../../users/models/model.user';
+import User from '../../../users/models/model.user';
 
 // Introducting User Order. No Users have orders, so we will default to alphabetical and then
 // require order when saving new users. The order will then be adjusted by admins.

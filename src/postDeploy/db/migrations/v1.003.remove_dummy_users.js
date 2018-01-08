@@ -1,4 +1,4 @@
-import User from '../../users/models/model.user';
+import User from '../../../users/models/model.user';
 
 const removeDummyUsers = {
   name: 'v1.003.remove_dummy_users',

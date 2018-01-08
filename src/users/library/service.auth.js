@@ -7,6 +7,7 @@ export async function login(creds) {
             username: creds.username.toLowerCase()
             // active: true
         });
+
         if (!!found) {
             const ok = await bcrypt.compare(creds.password, found.password);
             if (!!ok) {

@@ -1,4 +1,5 @@
 import bcrypt from 'bcryptjs';
+import AWS from 'aws-sdk';
 import User from '../models/model.user';
 import * as tools from '../../common/library/tools';
 
@@ -25,17 +26,22 @@ export async function getUsers() {
     return users;
 }
 
-export async function getUser(args) {
-    const id = args[0];
-    if (!id) return Promise.reject('Missing or invalid user id');
-    const user = await User.find({ _id: id, admin: false })
+export async function getUser(paramsId) {
+    let id = paramsId;
+    if (!id) {
+        return Promise.reject('Missing or invalid user id');
+    }
+    if (typeof id === 'string') {
+        id = parseInt(id);
+    }
+    const user = await User.findOne({ _id: id, admin: false })
     .select('-password')
     .select('-admin')
     .populate('_category', '-_service')
     .populate('_service')
     .populate('info.address.state')
     .populate('info.operationalCounties', 'name');
-    if (!user) throw new Error('Error finding user');
+    if (!user || !user._id) throw new Error('Error finding user');
     return user;
 }
 
@@ -184,4 +190,34 @@ export async function getUserBySubdomain(subdomain) {
         .select('-password')
         .select('-admin');
     }
+}
+
+export async function deleteUserImage(userId, imageName) {
+    const user = await User.findOne({ _id: userId });
+    const idx = user.info.images.indexOf(imageName);
+
+    if (idx < 0) {
+        return Promise.reject(`Image not found for user: ${userId}`);
+    }
+
+    await deleteImageFromS3(imageName);
+
+    user.info.images.splice(idx, 1);
+    const updatedUser = user;
+    return await User.findOneAndUpdate({ _id: userId }, updatedUser);
+}
+
+async function deleteImageFromS3(key) {
+    const params = {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        region: process.env.AWS_REGION || 'us-east-1'
+    };
+    const s3 = new AWS.S3(params);
+    const targetParams = {
+        Bucket: process.env.S3_ATTACHMENTS_BUCKET,
+        Key: key
+    };
+    await s3.deleteObject(targetParams).promise();
+    return Promise.resolve();
 }

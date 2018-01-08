@@ -29,9 +29,10 @@ export function getUsers(req, res) {
 }
 
 export function getUser(req, res) {
-    return Promise.resolve(Manager.init(req, res))
-    .then(Manager.handle(userService.getUser, 'req.params.id'))
-    .then(success.sendData);
+    return Promise.resolve(req.params.id)
+    .then(userService.getUser)
+    .then((data) => res.send(data))
+    .catch((err) => res.status(400).send(err));
 }
 
 export function createUser(req, res) {
@@ -69,4 +70,12 @@ export function gethostingData(req, res) {
         console.log(err);
         res.status(404).send(err);
     });
+}
+
+export function removeUserImage(req, res) {
+    return Promise.resolve()
+    .then(() => tokens.authorize(req.cookies.forestryservices))
+    .then(() => userService.deleteUserImage(req.params.id, req.body.image))
+    .then(() => res.status(204).send())
+    .catch(() => res.status(500).send());
 }

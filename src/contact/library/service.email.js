@@ -1,11 +1,10 @@
 import AWS from 'aws-sdk';
-import config from '../../config';
 
 export function sendEmail(msg) {
     const ses = new AWS.SES({
-        region: 'us-east-1',
-        accessKeyId: config.aws.accessKeyId,
-        secretAccessKey: config.aws.secretAccessKey
+        region: process.env.AWS_REGION || 'us-east-1',
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
     });
     const content = `
         ${msg.message}
@@ -13,9 +12,9 @@ export function sendEmail(msg) {
         Please respond to ${msg.email}
     `;
     const email = {
-        Source: config.aws.serviceEmail,
+        Source: process.env.SERVICE_EMAIL,
         Destination: {
-            ToAddresses: [config.aws.adminEmail]
+            ToAddresses: [process.env.ADMIN_EMAIL]
         },
         Message: {
             Subject: {

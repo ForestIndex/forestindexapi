@@ -17,4 +17,5 @@ export default function(app) {
     app.get('/api/admins', controller.getAdmins);
     app.post('/api/users', controller.createUser);
     app.post('/api/users/:id', controller.updateUser);
+    app.delete('/api/users/:id/images', controller.removeUserImage);
 }

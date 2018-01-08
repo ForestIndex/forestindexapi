@@ -1,6 +1,4 @@
 node_modules
 lib
-src/config.js
-src/config.prod.js
-src/local.config.js
+*.env
 *.log

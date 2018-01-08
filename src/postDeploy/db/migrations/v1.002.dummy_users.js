@@ -1,5 +1,5 @@
-import User from '../../users/models/model.user';
-import { createUser } from '../../users/library/service.users';
+import User from '../../../users/models/model.user';
+import { createUser } from '../../../users/library/service.users';
 
 // Adding dummy data for NODE_ENV=development
 // all usernames begin with __

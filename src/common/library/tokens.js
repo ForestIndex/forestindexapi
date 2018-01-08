@@ -1,13 +1,12 @@
 import jwt from 'jsonwebtoken';
 // import userService from '../../users/library/service.users';
 import User from '../../users/models/model.user';
-import config from '../../config';
 
 export function create(userId) {
     const sevenDays = 60 * 60 * 24 * 7;
     // store user id and expiration
     const obj = { jwtid: userId, expiresIn: sevenDays };
-    const token = jwt.sign(obj, config.secret);
+    const token = jwt.sign(obj, process.env.SECRET);
 
     return Promise.resolve(token);
 }
@@ -23,7 +22,7 @@ function extractCookie(req) {
 // with /:id... only users can update themselves- admins anyone
 export async function authorizeWithParams(req) {
     const token = await extractCookie(req);
-    const data = await jwt.verify(token, config.secret);
+    const data = await jwt.verify(token, process.env.SECRET);
     const userResult = await User.find({ _id: data.jwtid });
     const user = userResult[0];
 
@@ -41,20 +40,19 @@ export async function authorizeWithParams(req) {
     return Promise.reject('Invalid token');
 }
 
-export async function authorize(token, authLevel) {
+export async function authorize(token) {
     if (!token) {
         return Promise.reject('No token provided. Not authorized.');
     }
-    const data = jwt.verify(token, config.secret);
-
+    const data = jwt.verify(token, process.env.SECRET);
     if (!data || !data.jwtid) {
         return Promise.reject('Unauthoried.');
     }
 
     let criteria = { _id: data.jwtid };
-    const userResult = await User.find(criteria);
+    const userResult = await User.findOne(criteria);
 
-    if (userResult.length > 0) {
+    if (!!userResult && !!userResult._id) {
         return Promise.resolve();
     }
     return Promise.reject('Invalid web token. User not found.');
