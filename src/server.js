@@ -5,6 +5,8 @@ import cookieParser from 'cookie-parser';
 import uuid from 'uuid/v4';
 import cls from 'continuation-local-storage';
 import dotenv from 'dotenv';
+import https from 'https';
+import fs from 'fs';
 // this lib is used without explicitly calling 'colors'
 // eslint-disable-next-line
 import colors from 'colors';
@@ -13,11 +15,11 @@ import colors from 'colors';
 import postDeploy from './postDeploy';
 
 // import app modules
-import users from './users/router.users';
-import services from './services/router.services';
-import locations from './locations/router.locations';
-import upload from './upload/router.upload';
-import contact from './contact/router.contact';
+import registerUserRouter from './users/router.users';
+import registerServiceRouter from './services/router.services';
+import registerLocationRouter from './locations/router.locations';
+import registerUploadRouter from './upload/router.upload';
+import registerContactRouter from './contact/router.contact';
 
 // middleware
 import cors from './middleware/cors';
@@ -39,28 +41,26 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(transactions);
-app.listen(port, db);
 
 // call back functions
-function db() {
+(function db() {
     mongoose.Promise = global.Promise;
     mongoose.connect(process.env.DB);
     mongoose.connection.once('connected', startUp);
     const env = process.env.NODE_ENV || 'development';
     console.log(`connected to ${env} DB`.dim);
-}
+})();
 
 function startUp() {
     // check for new migrations
     return Promise.resolve()
     .then(postDeploy)
     .then(() => {
-        // start modules
-        users(app);
-        services(app);
-        locations(app);
-        upload(app);
-        contact(app);
+        registerUserRouter(app);
+        registerServiceRouter(app);
+        registerLocationRouter(app);
+        registerUploadRouter(app);
+        registerContactRouter(app);
         console.log(`Forest Index API running on port ${port}`.cyan);
     });
 }
@@ -91,3 +91,20 @@ process.on('unhandledRejection', (rej, prom) => {
     console.log(`Unhandled Rejection: ${rej} happened in promise: ${prom}`);
     console.log(prom);
 });
+
+// ----------- entry point ----------- //
+if (process.env.NODE_ENV === 'production') {
+    const privKeyFile = fs.readFileSync(`${__dirname}/key.pem`);
+    const certFile = fs.readFileSync(`${__dirname}/cert.pem`);
+
+    https.createServer({
+        key: privKeyFile,
+        cert: certFile
+    }, app)
+    .listen(port);
+
+} else {
+    app.listen(port, () => {
+        console.log('DEV');
+    });
+}

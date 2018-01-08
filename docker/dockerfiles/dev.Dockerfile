@@ -1,5 +1,5 @@
 FROM node:boron
-LABEL maintainer='Blue Cactus Web Solutions, LLC'
+LABEL maintainer='Forest Index Development'
 
 RUN mkdir -p /api
 

@@ -17,6 +17,7 @@
     "express": "^4.15.2",
     "express-jwt": "^5.1.0",
     "fs": "^0.0.1-security",
+    "https": "^1.0.0",
     "jsonwebtoken": "^7.3.0",
     "mongo": "^0.1.0",
     "mongoose": "^4.9.1",
@@ -39,7 +40,7 @@
   },
   "scripts": {
     "dev": "nodemon --exec 'eslint . && NODE_ENV='development' babel-node src/server.js'",
-    "docker:build": "docker build -t forest-index -f docker/prod/Dockerfile .",
+    "docker:build": "docker build -t forestindex -f docker/dockerfiles/prod.Dockerfile .",
     "docker:dev": "docker-compose -f docker-compose.yml -f docker/override/docker-compose.dev.yml up",
     "docker:dev:rebuild": "docker-compose -f docker-compose.yml -f docker/override/docker-compose.dev.yml up --build",
     "docker:down": "docker-compose -f docker-compose.yml -f docker/override/docker-compose.dev.yml down",

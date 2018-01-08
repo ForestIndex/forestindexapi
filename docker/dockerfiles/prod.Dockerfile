@@ -1,17 +1,17 @@
 FROM node:boron
-LABEL maintainer='Blue Cactus Web Solutions, LLC'
+LABEL maintainer='Forest Index Development'
 
-RUN mkdir ~/api
+RUN mkdir -p /api /ssl
 
-ADD package.json .babelrc .eslintrc .eslintignore yarn.lock ~/api/
-ADD src ~/api/src
-ADD test ~/api/test
+ADD package.json .babelrc .eslintrc .eslintignore yarn.lock /api/
+ADD src /api/src
+ADD test /api/test
 
-WORKDIR ~/api
+WORKDIR /api
 
 RUN yarn
 RUN yarn build:prod
 
-EXPOSE 8080 8080
+EXPOSE 443 443
 
 CMD yarn start
