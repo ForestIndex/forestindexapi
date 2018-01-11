@@ -12,9 +12,4 @@ services:
     restart: "always"
     volumes:
       - ./src:/api/src
-
-  # nginx:
-  #   image: nginx-proxy
-  #   container_name: nginx
-  #   environment:
-  #     - 
+      - ./ssl:/api/ssl

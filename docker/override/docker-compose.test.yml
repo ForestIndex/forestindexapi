@@ -2,10 +2,9 @@ version: '2'
 services:
 
   api:
-    image: 081027247578.dkr.ecr.us-east-1.amazonaws.com/api:latest
+    image: forestindex:latest
     container_name: api
-    environment:
-     - NODE_ENV=production
+    env_file: src/prod.env
     ports:
      - '443:443'
     restart: always

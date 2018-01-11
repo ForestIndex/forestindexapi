@@ -20,6 +20,7 @@ const schema = new mongoose.Schema({
             state: { type: Number, ref: 'State' },
             zip: { type: Number }
         },
+        websiteUrl: { type: String }
     },
     hosting: {
         subdomain: { type: String },

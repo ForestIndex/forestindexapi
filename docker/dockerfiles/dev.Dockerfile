@@ -1,7 +1,7 @@
 FROM node:boron
 LABEL maintainer='Forest Index Development'
 
-RUN mkdir -p /api
+RUN mkdir -p /api/ssl
 
 ADD package.json .babelrc .eslintrc .eslintignore yarn.lock /api/
 ADD src /api/src

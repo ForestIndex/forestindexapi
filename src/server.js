@@ -26,7 +26,6 @@ import cors from './middleware/cors';
 
 const envFile = process.env.NODE_ENV === 'production' ? 'prod.env' : 'dev.env';
 dotenv.config({ path: `${__dirname}/${envFile}` });
-console.log(process.env.DB);
 
 // should not set this to a variable if possible
 const nameSpace = cls.createNamespace('com.forestindex');
@@ -43,15 +42,15 @@ app.use(cookieParser());
 app.use(transactions);
 
 // call back functions
-(function db() {
+(async function db() {
     mongoose.Promise = global.Promise;
-    mongoose.connect(process.env.DB);
-    mongoose.connection.once('connected', startUp);
+    await mongoose.connect(process.env.DB, { useMongoClient: true });
+    await startRouters();
     const env = process.env.NODE_ENV || 'development';
     console.log(`connected to ${env} DB`.dim);
 })();
 
-function startUp() {
+function startRouters() {
     // check for new migrations
     return Promise.resolve()
     .then(postDeploy)
@@ -93,18 +92,11 @@ process.on('unhandledRejection', (rej, prom) => {
 });
 
 // ----------- entry point ----------- //
-if (process.env.NODE_ENV === 'production') {
-    const privKeyFile = fs.readFileSync(`${__dirname}/key.pem`);
-    const certFile = fs.readFileSync(`${__dirname}/cert.pem`);
+const privKeyFile = fs.readFileSync(`${__dirname}/../ssl/${process.env.KEY_FILE}`);
+const certFile = fs.readFileSync(`${__dirname}/../ssl/${process.env.CERT_FILE}`);
 
-    https.createServer({
-        key: privKeyFile,
-        cert: certFile
-    }, app)
-    .listen(port);
-
-} else {
-    app.listen(port, () => {
-        console.log('DEV');
-    });
-}
+https.createServer({
+    key: privKeyFile,
+    cert: certFile
+}, app)
+.listen(port);

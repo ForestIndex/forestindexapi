@@ -1,11 +1,6 @@
 {
   "dependencies": {
     "aws-sdk": "^2.42.0",
-    "babel-cli": "^6.24.1",
-    "babel-plugin-rewire": "1.0.0",
-    "babel-plugin-transform-runtime": "6.15.0",
-    "babel-preset-es2015": "6.18.0",
-    "babel-preset-stage-3": "6.17.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.17.1",
     "colors": "^1.1.2",
@@ -20,15 +15,22 @@
     "https": "^1.0.0",
     "jsonwebtoken": "^7.3.0",
     "mongo": "^0.1.0",
-    "mongoose": "^4.9.1",
+    "mongoose": "^4.13.9",
     "pm2": "^2.4.6",
     "request": "^2.81.0",
     "uuid": "^3.0.1"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
     "babel-core": "^6.25.0",
     "babel-eslint": "^7.2.0",
+    "babel-plugin-rewire": "^1.1.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-3": "^6.24.1",
     "babel-runtime": "^6.23.0",
+    "babel-template": "^6.2.0",
+    "babel-types": "^6.2.0",
     "babelify": "^7.3.0",
     "browserify": "^14.3.0",
     "chai": "^3.5.0",
@@ -39,13 +41,14 @@
     "sinon": "^2.1.0"
   },
   "scripts": {
+    "copy:files": "cp src/postDeploy/s3/*.png lib/postDeploy/s3/ && cp src/*.env lib/",
     "dev": "nodemon --exec 'eslint . && NODE_ENV='development' babel-node src/server.js'",
-    "docker:build": "docker build -t forestindex -f docker/dockerfiles/prod.Dockerfile .",
+    "docker:build": "docker build -t forestindex:latest -f docker/dockerfiles/prod.Dockerfile .",
     "docker:dev": "docker-compose -f docker-compose.yml -f docker/override/docker-compose.dev.yml up",
     "docker:dev:rebuild": "docker-compose -f docker-compose.yml -f docker/override/docker-compose.dev.yml up --build",
     "docker:down": "docker-compose -f docker-compose.yml -f docker/override/docker-compose.dev.yml down",
     "test:unit": "mocha --require babel-core/register --recursive src/_tests/unit",
-    "build:prod": "rm -rf lib && mkdir lib && NODE_ENV='development' babel src --out-dir lib --ignore src/_tests/*",
+    "build:prod": "rm -rf lib && mkdir lib && NODE_ENV='production' babel src --out-dir lib --ignore src/_tests/* && yarn copy:files",
     "start": "node lib/server.js"
   }
 }

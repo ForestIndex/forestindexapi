@@ -3,8 +3,8 @@ import User from '../../../users/models/model.user';
 // Introducting User Order. No Users have orders, so we will default to alphabetical and then
 // require order when saving new users. The order will then be adjusted by admins.
 
-const addUserOrders = {
-  name: 'v1.001.add_user_order',
+const addUserOrder = {
+  name: 'v1.001.addUserOrder',
   up: addOrders,
   down: removeOrders
 };
@@ -54,4 +54,4 @@ async function removeOrders() {
   return Promise.resolve();
 }
 
-export default addUserOrders;
+export default addUserOrder;
