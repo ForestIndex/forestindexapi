@@ -92,11 +92,17 @@ process.on('unhandledRejection', (rej, prom) => {
 });
 
 // ----------- entry point ----------- //
-const privKeyFile = fs.readFileSync(`${__dirname}/../ssl/${process.env.KEY_FILE}`);
-const certFile = fs.readFileSync(`${__dirname}/../ssl/${process.env.CERT_FILE}`);
+if (!!process.env.USE_SSL || process.env.USE_SSL === 'true') {
+    const privKeyFile = fs.readFileSync(`${__dirname}/../ssl/${process.env.KEY_FILE}`);
+    const certFile = fs.readFileSync(`${__dirname}/../ssl/${process.env.CERT_FILE}`);
 
-https.createServer({
-    key: privKeyFile,
-    cert: certFile
-}, app)
-.listen(port);
+    https.createServer({
+        key: privKeyFile,
+        cert: certFile
+    }, app)
+    .listen(port);
+} else {
+    app.listen(port, () => {
+        console.log(`API listening on port: ${port}`);
+    });
+}
