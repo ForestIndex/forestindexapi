@@ -7,6 +7,7 @@ import cls from 'continuation-local-storage';
 import dotenv from 'dotenv';
 import https from 'https';
 import fs from 'fs';
+import cors from 'cors';
 // this lib is used without explicitly calling 'colors'
 // eslint-disable-next-line
 import colors from 'colors';
@@ -21,9 +22,6 @@ import registerLocationRouter from './locations/router.locations';
 import registerUploadRouter from './upload/router.upload';
 import registerContactRouter from './contact/router.contact';
 
-// middleware
-import cors from './middleware/cors';
-
 const envFile = process.env.NODE_ENV === 'production' ? 'prod.env' : 'dev.env';
 dotenv.config({ path: `${__dirname}/${envFile}` });
 
@@ -32,19 +30,49 @@ const nameSpace = cls.createNamespace('com.forestindex');
 
 const port = process.env.PORT || 8080;
 
+const corsConfig = {
+    credentials: true,
+    methods: 'GET,POST,PUT,PATCH,DELETE',
+    allowedHeaders: 'Content-Type,Authorization,Access-Control-Allow-Credentials',
+    origin: (origin, callback) => {
+        const whiteList = [
+            process.env.ADMIN_SAFE_ORIGIN,
+            process.env.PUBLIC_SAFE_ORIGIN
+        ];
+        if (whiteList.indexOf(origin) >= 0) {
+            callback(null, true);
+        } else {
+            callback(new Error('CORS: Unathorized'));
+        }
+    }
+};
+
 // set app
 const app = express();
+app.use(cors(corsConfig));
 app.use(bodyParser.json({ limit: '1000kb' }));
-app.use(cors);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(transactions);
 
+app.use((req, res, next) => {
+    if (!!process.env.DEBUG && process.env.DEBUG === 'true') {
+        console.log(`
+            ${ `Route: `.dim } ${ `${req.originalUrl}`.cyan }
+        `);
+        console.log(`Headers: `.dim);
+        console.log(req.headers);
+        console.log(`Request Body: `.dim);
+        console.log(req.body);
+    }
+    next();
+});
+
 // call back functions
 (async function db() {
     mongoose.Promise = global.Promise;
-    await mongoose.connect(process.env.DB, { useMongoClient: true });
+    await mongoose.connect(process.env.DB || 'mongodb://localhost/forestindexdb', { useMongoClient: true });
     await startRouters();
     const env = process.env.NODE_ENV || 'development';
     console.log(`connected to ${env} DB`.dim);
@@ -60,7 +88,6 @@ function startRouters() {
         registerLocationRouter(app);
         registerUploadRouter(app);
         registerContactRouter(app);
-        console.log(`Forest Index API running on port ${port}`.cyan);
     });
 }
 
@@ -85,7 +112,6 @@ app.get('/api/status', (req, res) => {
     });
 });
 
-
 process.on('unhandledRejection', (rej, prom) => {
     console.log(`Unhandled Rejection: ${rej} happened in promise: ${prom}`);
     console.log(prom);
@@ -101,8 +127,9 @@ if (!!process.env.USE_SSL || process.env.USE_SSL === 'true') {
         cert: certFile
     }, app)
     .listen(port);
+    console.log(`Test app listening on port: ${port}`)
 } else {
     app.listen(port, () => {
-        console.log(`API listening on port: ${port}`);
+        console.log(`Forest Index API listening on port: ${port}`.cyan);
     });
 }

@@ -3,8 +3,9 @@ import Category from '../models/model.category';
 import * as tools from '../../common/library/tools';
 
 export async function getServices() {
-    return await Service.find({})
+    const services = await Service.find({})
     .sort('order');
+    return Promise.resolve(services);
 }
 
 export async function updateService(id, update) {

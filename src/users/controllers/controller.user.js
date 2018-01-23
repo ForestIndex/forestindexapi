@@ -3,7 +3,6 @@ import * as errors from '../../common/responses/errors';
 import * as success from '../../common/responses/success';
 import * as tokens from '../../common/library/tokens';
 import Manager from '../../common/objects/manager';
-import colors from 'colors'; // eslint-disable-line
 
 export function getAllUsers(req, res) {
     return Promise.resolve()

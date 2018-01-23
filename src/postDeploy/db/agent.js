@@ -1,13 +1,7 @@
-import mongoose from 'mongoose';
 import fs from 'fs';
+import Migration from './migration.model';
 
 const migrationsFolder = process.env.MIGRATIONS_FOLDER_PATH || `${__dirname}/migrations`;
-
-const migrationSchema = new mongoose.Schema({
-  _id: { type: Number },
-  name: { type: String }
-});
-const Migration = mongoose.model('Migration', migrationSchema, 'Migration');
 
 export default async function agent() {
   const migrations = fs.readdirSync(migrationsFolder);
@@ -17,12 +11,11 @@ export default async function agent() {
     const isFunction = typeof module.up === 'function';
     const migName = migFile.replace('.js', '');
     const m = await Migration.findOne({ name: migName });
-
-    // if (!m && !!module.up && isFunction) {
-    //   const id = Math.round(Math.random() * 999999999);
-    //   await module.up();
-    //   const update = new Migration({ name: migName, _id: id });
-    //   await update.save();
-    // }
+    if (!m && !!module.up && isFunction) {
+      const id = Math.round(Math.random() * 999999999);
+      await module.up();
+      const update = new Migration({ name: migName, _id: id });
+      await update.save();
+    }
   }
 }

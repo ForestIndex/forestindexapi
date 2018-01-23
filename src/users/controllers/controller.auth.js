@@ -13,7 +13,7 @@ export function login(req, res) {
         res.cookie('forestryservices', { httpOnly: false, maxAge: 86400 })
         .send({ token: tkn });
     })
-    .catch((err) => errors.forbidden(req, res, err));
+    .catch((err) => res.status(403).send(err));
 }
 
 export function checkCredentials(req, res) {

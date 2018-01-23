@@ -23,6 +23,13 @@ export async function getUsers() {
     .populate('_service')
     .populate('_category', '-_service')
     .sort('order');
+
+    users.forEach((u) => {
+        if (u && !!u.info && !!u.info.images && u.info.images.length === 0) {
+            user.info.images.push('ee55c6a0-2adc-11e7-a8f5-4b27c9497bb1');
+        }
+    });
+
     return users;
 }
 
@@ -52,20 +59,18 @@ export async function getuserByUserName(name) {
 
 export async function createUser(usr) {
     const newUser = usr;
-    newUser._id = await tools.getNextDbId();
+    const latestUser = await User.findOne().sort('-_id');
+    const newId = (!!latestUser && !!latestUser._id) ? latestUser._id + 1 : 1;
+    newUser._id = newId;
 
     if (newUser.password) {
         newUser.password = bcrypt.hashSync(newUser.password, 8);
     }
 
-    if (!newUser.images || newUser.images.length === 0) {
-        newUser.images = [];
-        newUser.images.push('ee55c6a0-2adc-11e7-a8f5-4b27c9497bb1'); // no profile pic
-    }
     if (!newUser.order) {
         const lastOrder = await User.findOne({ admin: false })
         .sort('-order');
-        const next = lastOrder.order + 1;
+        const next = (!!lastOrder && !!lastOrder.order) ? lastOrder.order + 1 : 1;
         newUser.order = next;
     }
 
@@ -140,7 +145,6 @@ export async function updateUser(id, data) {
     }
     if (!data.info.images || data.info.images.length === 0) {
         data.info.images = [];
-        // data.info.images.push('ee55c6a0-2adc-11e7-a8f5-4b27c9497bb1');
     }
     await User.findOneAndUpdate({ _id: id }, { $set: data });
     const usr = await User.findById(id);
@@ -183,12 +187,16 @@ export async function getUserBySubdomain(subdomain) {
     if (!user || !user._id) {
         throw new Error('No user with specified subdomain');
     } else {
-        return await User.findOne({ _id: user._id })
+        const u = await User.findOne({ _id: user._id })
         .populate('_service')
         .populate('_category')
         .populate('info.address.state')
         .select('-password')
         .select('-admin');
+    }
+
+    if (!!u && !!u.info && !!u.info.images && u.info.images.length === 0) {
+        u.info.images.push('ee55c6a0-2adc-11e7-a8f5-4b27c9497bb1');
     }
 }
 
