@@ -5,6 +5,7 @@ import * as tokens from '../../common/library/tokens';
 import Manager from '../../common/objects/manager';
 
 export function getAllUsers(req, res) {
+    console.log(req.cookies);
     return Promise.resolve()
     .then(() => tokens.authorize(req.cookies.forestryservices))
     .then(() => userService.getAllUsers())

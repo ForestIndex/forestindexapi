@@ -35,15 +35,19 @@ const corsConfig = {
     methods: 'GET,POST,PUT,PATCH,DELETE',
     allowedHeaders: 'Content-Type,Authorization,Access-Control-Allow-Credentials',
     origin: (origin, callback) => {
-        const whiteList = [
-            process.env.ADMIN_SAFE_ORIGIN,
-            process.env.PUBLIC_SAFE_ORIGIN
-        ];
-        if (whiteList.indexOf(origin) >= 0) {
-            callback(null, true);
-        } else {
-            callback(new Error('CORS: Unathorized'));
-        }
+        // const whiteList = [
+        //     process.env.ADMIN_SAFE_ORIGIN,
+        //     process.env.PUBLIC_SAFE_ORIGIN
+        // ];
+        // if (whiteList.indexOf(origin) >= 0) {
+        //     callback(null, true);
+        // } else {
+        //     callback(new Error(`
+        //         Origin: ${origin} is not allowed.
+        //         WhiteListOrigin: ${whiteList.indexOf(origin) >= 0}
+        //     `));
+        // }
+        callback(null, true);
     }
 };
 
@@ -127,9 +131,9 @@ if (!!process.env.USE_SSL || process.env.USE_SSL === 'true') {
         cert: certFile
     }, app)
     .listen(port);
-    console.log(`Test app listening on port: ${port}`)
+    console.log(`Forest Index API listening on port: ${port}`)
 } else {
     app.listen(port, () => {
-        console.log(`Forest Index API listening on port: ${port}`.cyan);
+        console.log(`Test app listening on port: ${port}`.cyan);
     });
 }

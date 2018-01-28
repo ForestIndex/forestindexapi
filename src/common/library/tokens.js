@@ -44,6 +44,12 @@ export async function authorize(token) {
     if (!token) {
         return Promise.reject('No token provided. Not authorized.');
     }
+    if (process.env.DEBUG && process.env.DEBUG === 'true') {
+        console.log(`
+            Checking token: ${token}
+        `);
+        console.log(token);
+    }
     const data = jwt.verify(token, process.env.SECRET);
     if (!data || !data.jwtid) {
         return Promise.reject('Unauthoried.');

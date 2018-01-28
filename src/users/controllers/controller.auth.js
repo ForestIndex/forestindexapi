@@ -10,8 +10,8 @@ export function login(req, res) {
     .then(service.login)
     .then((id) => tokens.create(id))
     .then((tkn) => {
-        res.cookie('forestryservices', { httpOnly: false, maxAge: 86400 })
-        .send({ token: tkn });
+        res.cookie(process.env.COOKIE_NAME, tkn, { httpOnly: false, maxAge: 86400 })
+        res.send({ token: tkn });
     })
     .catch((err) => res.status(403).send(err));
 }
