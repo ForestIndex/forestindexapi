@@ -44,13 +44,17 @@ export async function authorize(token) {
     if (!token) {
         return Promise.reject('No token provided. Not authorized.');
     }
+
+    const parsedToken = token.replace(`${process.env.COOKIE_NAME}=`, '');
     if (process.env.DEBUG && process.env.DEBUG === 'true') {
         console.log(`
-            Checking token: ${token}
+            Checking token: ${parsedToken}
         `);
-        console.log(token);
+        console.log(parsedToken);
     }
-    const data = jwt.verify(token, process.env.SECRET);
+    const data = jwt.verify(parsedToken, process.env.SECRET);
+    if (process.env.DEBUG === 'true') console.log(data);
+
     if (!data || !data.jwtid) {
         return Promise.reject('Unauthoried.');
     }

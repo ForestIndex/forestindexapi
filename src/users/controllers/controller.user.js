@@ -5,9 +5,8 @@ import * as tokens from '../../common/library/tokens';
 import Manager from '../../common/objects/manager';
 
 export function getAllUsers(req, res) {
-    console.log(req.cookies);
     return Promise.resolve()
-    .then(() => tokens.authorize(req.cookies.forestryservices))
+    .then(() => tokens.authorize(req.headers.authorization))
     .then(() => userService.getAllUsers())
     .then((users) => res.send(users))
     .catch((err) => errors.forbidden(req, res, err));
@@ -15,7 +14,7 @@ export function getAllUsers(req, res) {
 
 export function getAdmins(req, res) {
     return Promise.resolve()
-    .then(() => tokens.authorize(req.cookies.forestryservices))
+    .then(() => tokens.authorize(req.headers.authorization))
     .then(() => userService.getAdmins())
     .then((admins) => res.send(admins))
     .catch((err) => errors.forbidden(req, res, err));
@@ -37,7 +36,7 @@ export function getUser(req, res) {
 
 export function createUser(req, res) {
     return Promise.resolve()
-    .then(() => tokens.authorize(req.cookies.forestryservices))
+    .then(() => tokens.authorize(req.headers.authorization))
     .then(() => userService.createUser(req.body))
     .then(() => res.status(204).send())
     .catch((err) => {
@@ -48,7 +47,7 @@ export function createUser(req, res) {
 
 export function updateUser(req, res) {
     return Promise.resolve()
-    .then(() => tokens.authorize(req.cookies.forestryservices))
+    .then(() => tokens.authorize(req.headers.authorization))
     .then(() => userService.updateUser(req.params.id, req.body))
     .then((usr) => res.send(usr))
     .catch(() => { res.status(403).send(); });
@@ -74,7 +73,7 @@ export function gethostingData(req, res) {
 
 export function removeUserImage(req, res) {
     return Promise.resolve()
-    .then(() => tokens.authorize(req.cookies.forestryservices))
+    .then(() => tokens.authorize(req.headers.authorization))
     .then(() => userService.deleteUserImage(req.params.id, req.body.image))
     .then(() => res.status(204).send())
     .catch(() => res.status(500).send());

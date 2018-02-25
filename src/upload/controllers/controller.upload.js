@@ -5,7 +5,7 @@ import Manager from '../../common/objects/manager';
 
 export function uploadFile(req, res) {
     return Promise.resolve(req)
-    .then(() => tokens.authorize(req.cookies.forestryservices))
+    .then(() => tokens.authorize(req.headers.authorization))
     .then(() => Promise.resolve(req.body))
     .then(uploadFiles)
     .then((data) => res.send(data))

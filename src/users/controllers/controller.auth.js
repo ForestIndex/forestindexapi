@@ -10,15 +10,15 @@ export function login(req, res) {
     .then(service.login)
     .then((id) => tokens.create(id))
     .then((tkn) => {
-        res.cookie(process.env.COOKIE_NAME, tkn, { httpOnly: false, maxAge: 86400 })
+        // res.cookie(process.env.COOKIE_NAME, tkn, { httpOnly: false, maxAge: 86400 })
         res.send({ token: tkn });
     })
     .catch((err) => res.status(403).send(err));
 }
 
-export function checkCredentials(req, res) {
-    return Promise.resolve(Manager.init(req, res))
-    .then(() => tokens.authorize(req.cookies.forestryservices))
-    .then(() => res.sendStatus(200))
-    .catch((err) => res.status(403).send(err));
-}
+// export function checkCredentials(req, res) {
+//     return Promise.resolve(Manager.init(req, res))
+//     .then(() => tokens.authorize(req.headers.authorization))
+//     .then(() => res.sendStatus(200))
+//     .catch((err) => res.status(403).send(err));
+// }

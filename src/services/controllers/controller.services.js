@@ -10,7 +10,7 @@ export function getServices(req, res) {
 
 export function updateService(req, res) {
     return Promise.resolve()
-    .then(() => tokens.authorize(req.cookies.forestryservices))
+    .then(() => tokens.authorize(req.headers.authorization))
     .then(() => service.updateService(req.params.id, req.body))
     .then((service) => res.send(service))
     .catch((err) => {
@@ -21,7 +21,7 @@ export function updateService(req, res) {
 
 export function createService(req, res) {
     return Promise.resolve()
-    .then(() => tokens.authorize(req.cookies.forestryservices))
+    .then(() => tokens.authorize(req.headers.authorization))
     .then(() => service.addService(req.body))
     .then((service) => res.send(service))
     .catch((err) => {
@@ -32,7 +32,7 @@ export function createService(req, res) {
 
 export function deleteService(req, res) {
     return Promise.resolve()
-    .then(() => tokens.authorize(req.cookies.forestryservices))
+    .then(() => tokens.authorize(req.headers.authorization))
     .then(() => service.validateEmptyService(req.params.id))
     .then((ok) => {
         if (ok) {

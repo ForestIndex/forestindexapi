@@ -10,7 +10,7 @@ export function getCategories(req, res) {
 
 export function deleteCategory(req, res) {
     return Promise.resolve()
-    .then(() => tokens.authorize(req.cookies.forestryservices))
+    .then(() => tokens.authorize(req.headers.authorization))
     .then(() => catService.validateNoUsers(req.params.id))
     .then((ok) => {
         if (ok) {
@@ -28,7 +28,7 @@ export function deleteCategory(req, res) {
 
 export function addCategory(req, res) {
     return Promise.resolve()
-    .then(() => tokens.authorize(req.cookies.forestryservices))
+    .then(() => tokens.authorize(req.headers.authorization))
     .then(() => catService.addCategory(req.body))
     .then((cat) => res.send(cat))
     .catch((err) => {
@@ -39,7 +39,7 @@ export function addCategory(req, res) {
 
 export function updateCategory(req, res) {
     return Promise.resolve()
-    .then(() => tokens.authorize(req.cookies.forestryservices))
+    .then(() => tokens.authorize(req.headers.authorization))
     .then(() => catService.updateCategory(req.params.id, req.body))
     .then((category) => res.send(category))
     .catch((err) => {

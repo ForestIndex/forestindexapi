@@ -33,21 +33,24 @@ const port = process.env.PORT || 8080;
 const corsConfig = {
     credentials: true,
     methods: 'GET,POST,PUT,PATCH,DELETE',
-    allowedHeaders: 'Content-Type,Authorization,Access-Control-Allow-Credentials',
+    allowedHeaders: 'Content-Type,Authorization,Access-Control-Allow-Credentials,Access-Control-Allow-Origin',
     origin: (origin, callback) => {
-        // const whiteList = [
-        //     process.env.ADMIN_SAFE_ORIGIN,
-        //     process.env.PUBLIC_SAFE_ORIGIN
-        // ];
-        // if (whiteList.indexOf(origin) >= 0) {
-        //     callback(null, true);
-        // } else {
-        //     callback(new Error(`
-        //         Origin: ${origin} is not allowed.
-        //         WhiteListOrigin: ${whiteList.indexOf(origin) >= 0}
-        //     `));
-        // }
-        callback(null, true);
+        if (process.env.NODE_ENV === 'production') {
+            const whiteList = [
+                process.env.ADMIN_SAFE_ORIGIN,
+                process.env.PUBLIC_SAFE_ORIGIN
+            ];
+            if (!!origin && whiteList.indexOf(origin) < 0) {
+                callback(new Error(`
+                    Origin: ${origin} is not allowed.
+                    WhiteListOrigin: ${whiteList.indexOf(origin) >= 0}
+                `));
+            } else {
+                callback(null, true);
+            }
+        } else {
+            callback(null, true);
+        }
     }
 };
 
@@ -56,7 +59,6 @@ const app = express();
 app.use(cors(corsConfig));
 app.use(bodyParser.json({ limit: '1000kb' }));
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(transactions);
 

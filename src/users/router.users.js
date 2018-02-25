@@ -4,7 +4,7 @@ import * as authController from './controllers/controller.auth';
 export default function(app) {
     // authorization
     app.post('/api/login', authController.login);
-    app.post('/api/auth', authController.checkCredentials);
+    // app.post('/api/auth', authController.checkCredentials);
 
     // standard user routes
     app.get('/api/users', controller.getUsers);

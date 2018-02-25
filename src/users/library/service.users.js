@@ -161,12 +161,13 @@ export async function updateUser(id, data) {
 }
 
 export async function getAllUsers() {
-    return await User.find({ admin: false })
+    const users = await User.find({ admin: false })
     .populate('_service')
     .populate('_category')
     .populate('info.address.state')
     .populate('info.operationalCounties')
     .sort('order');
+    return Promise.resolve(users);
 }
 
 export async function getAdmins() {
